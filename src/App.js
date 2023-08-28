@@ -1,23 +1,43 @@
-import logo from './logo.svg';
 import './App.css';
+import { Routes, Route, useNavigate } from 'react-router-dom';
+import { useState } from 'react';
+import Colors from './Colors';
+import NotFound from './NotFound';
+import colors from './colorsArray';
+import ColorPick from './ColorPick';
+import ColorForm from './ColorForm';
+
+/** App
+ * 
+ * state: colorsData
+ * 
+ * props: none
+ * 
+ */
 
 function App() {
+
+  const [colorsData, setColorsData] = useState(colors);
+  const navigate = useNavigate();
+
+  const updateColorsData = (newColor) => {
+    const existingColor = colorsData.find(color => color.name === newColor.toLowerCase())
+    if (!existingColor) {
+      setColorsData(prevData => [{name: newColor}, ...prevData])
+      navigate('/colors')
+    }
+    else alert('color already exists');
+  }
+
   return (
     <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+      <p><button onClick={()=>navigate('/colors/new')}>Add Color</button></p>
+        <Routes>
+            <Route path='/colors' element={<Colors colorsData={colorsData}/> }/>
+            <Route path='/colors/:color' element={<ColorPick colorsData={colorsData}/> }/>
+            <Route path='/colors/new' element={<ColorForm updateColorsData={updateColorsData}/>}/>
+            <Route path='/*' element={<NotFound />}/>
+        </Routes>      
     </div>
   );
 }
